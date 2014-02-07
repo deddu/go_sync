@@ -1,0 +1,8 @@
+bin
+*.pyc
+DS_Store
+include
+lib
+man
+.idea
+.Python
