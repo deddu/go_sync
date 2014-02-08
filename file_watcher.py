@@ -15,9 +15,9 @@ class GlobusFileWatcherHandler(PatternMatchingEventHandler):
         })
 
 def addremotes(files_dict,remote):
-    from os.path import join, dirname
+    from os import path
     for f in files_dict:
-        f['remote_path'] = remote + f['src_path'] #make sure it works as expected for relative/absolute paths.
+        f['remote_path'] = path.join(remote,path.split(f['src_path'])[1])
     return files_dict
 
 def process(files,trans_api, ep1="ep1",ep2="ep2"):
@@ -36,14 +36,13 @@ def process(files,trans_api, ep1="ep1",ep2="ep2"):
       totransfer = filter(modified_or_created, thefiles)
       todel = filter(deleted,thefiles)
       tomove = filter(moved,thefiles)
-
+      print "sending"
       if totransfer:
         _,_,data = trans_api.submission_id()
         subid = data['value']
         task=transfer([x['src_path'] for x in totransfer],[x['remote_path'] for x in totransfer],ep1,ep2, subid)
         print "READY TO SUBMIT TASK: -----------\n",task.as_json()
         code,reason,data=transfer_api_client.transfer(task)
-
         print "code:\t{0}\nreason:\t{1}\ndata:\t{2}".format(code,reason,data)
       if todel:
         _,_,data = trans_api.submission_id()
@@ -57,7 +56,6 @@ def process(files,trans_api, ep1="ep1",ep2="ep2"):
         task=move([x['src_path'] for x in totransfer],[x['remote_path'] for x in totransfer],ep1,ep2,subid)
         code,reason,data=transfer_api_client.transfer(task)
         print "code:\t{0}\nreason:\t{1}\ndata:\t{2}".format(code,reason,data)
-
 
 if __name__ == "__main__":
     import sys
@@ -86,9 +84,9 @@ oauth_token = authorization token
      """
         username = "cadeddu"
         local_endpoint = "cadeddu#bigmac"
-        local_path = "tmp1"
-        remote_endpoint= "cadeddu#bigmac"
-        remote_path = "tmp2"
+        local_path = "tmp"
+        remote_endpoint= "cadeddu#ec2-54-80-0-6"
+        remote_path = "/home/cadeddu/globus/tmp2"
         oauth_token = "un=cadeddu|tokenid=486d4340-90d3-11e3-8ab8-1231391ccf32|expiry=1423408287|client_id=cadeddu|token_type=Bearer|SigningSubject=https://nexus.api.globusonline.org/goauth/keys/491c851c-90d3-11e3-8ab8-1231391ccf32|sig=2246530f0d6c47e85a0e6dcf5413f8c84671a62896d18510ecbea648a5fccddc643c17c35da81a81270236315b0ec7d946037b800a064fe58bb914c069d1dede14c54e84b316853b328dd764791914bdddd02465a8d1b8ba2c24f8de433ebab4b5dfb69db04e2009e62e65e155b1cb19dabc3bacc05aa753539f1cd9e7b1bac4"
         #exit()
 
@@ -101,14 +99,21 @@ oauth_token = authorization token
 
     #we create a transfer_api_client
     transfer_api_client= api_client.TransferAPIClient(username, goauth=oauth_token)
+    _,_,req = transfer_api_client.endpoint_activation_requirements(local_endpoint)
+    print req.as_json()
+    transfer_api_client.endpoint_autoactivate(local_endpoint, if_expires_in="10")
+
+    _,_,req = transfer_api_client.endpoint_activation_requirements(remote_endpoint)
+    transfer_api_client.endpoint_autoactivate(remote_endpoint, if_expires_in="10")
 
     try:
         while True:
-            time.sleep(10) #
-
+            time.sleep(10) #FIXME:5 minutes
             if thefiles:
-                #print ("im pushing " + str(thefiles))
-                process(addremotes(thefiles,remote_path),transfer_api_client,local_endpoint,remote_endpoint)
+                try:
+                    process(addremotes(thefiles,remote_path),transfer_api_client,local_endpoint,remote_endpoint)
+                except api_client.APIError as e:
+                    print "Error: %s" % e.message
                 thefiles=[]
             else:
                 print "tick"
