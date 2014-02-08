@@ -7,9 +7,9 @@ import time, datetime
 
 
 
-def transfer(what, where, ep1="go#ep1", ep2="go#ep2"):
+def transfer(what, where, ep1="go#ep1", ep2="go#ep2", submission_id = "ed41a2d6-9069-11e3-bce2-123139074522"):
     #code, message, data = api_client.SimpleTransfer().submission_id()
-    submission_id = "ed41a2d6-9069-11e3-bce2-123139074522"#data["value"]
+    #data["value"]
     deadline = datetime.datetime.utcnow() + datetime.timedelta(minutes=10)#fetch this from a config file eventually
     #here we create a new transfer object.
     t = api_client.Transfer(submission_id,
@@ -35,7 +35,7 @@ def transfer(what, where, ep1="go#ep1", ep2="go#ep2"):
     print "t.items: ",t.items
     return t#task_id#code, reason, data
 
-def delete(what, ep1="go#ep1", ep2="go#ep2"): #may change
+def delete(what, ep1="go#ep1", ep2="go#ep2",submission_id = "ed41a2d6-9069-11e3-bce2-123139074522"): #may change
     #code, message, data = api_client.SimpleTransfer().submission_id()
     submission_id = "ed41a2d6-9069-11e3-bce2-123139074522"#data["value"]
     deadline = datetime.datetime.utcnow() + datetime.timedelta(minutes=10)#fetch this from a config file eventually
@@ -52,13 +52,6 @@ def delete(what, ep1="go#ep1", ep2="go#ep2"): #may change
     print("t.items = ",t.items)
     return t
 
-def move(what,where, ep1="go#ep1", ep2="go#ep2"): #may change
-    transfer(what,where, ep1, ep2)#this is a little trickier, as we might want to wait for the response...
-    delete(what,ep1,ep2)
-
-def run(task):
-    #we create a transfer_api_client
-    transfer_api_client= api_client.TransferAPIClient('giggi', header_auth="fhaf")
-    code,reason,data=transfer_api_client.transfer(task)
-    print "code:\t{0}\nreason:\t{1}\ndata:\t{2}".format(code,reason,data)
-    return code,reason,data
+def move(what,where, ep1="go#ep1", ep2="go#ep2",submission_id = "ed41a2d6-9069-11e3-bce2-123139074522"): #may change
+    transfer(what,where, ep1, ep2, submission_id)#this is a little trickier, as we might want to wait for the response...
+    delete(what,ep1,ep2,submission_id)
