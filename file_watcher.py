@@ -84,8 +84,11 @@ remote_endpoint= name of the remote endpoint
 remote_path = path on the remote machine
 oauth_token = authorization token
      """
-        local_path = "."
-        remote_path = "/home/giggi"
+        username = "cadeddu"
+        local_endpoint = "cadeddu#bigmac"
+        local_path = "tmp1"
+        remote_endpoint= "cadeddu#bigmac"
+        remote_path = "tmp2"
         oauth_token = "un=cadeddu|tokenid=486d4340-90d3-11e3-8ab8-1231391ccf32|expiry=1423408287|client_id=cadeddu|token_type=Bearer|SigningSubject=https://nexus.api.globusonline.org/goauth/keys/491c851c-90d3-11e3-8ab8-1231391ccf32|sig=2246530f0d6c47e85a0e6dcf5413f8c84671a62896d18510ecbea648a5fccddc643c17c35da81a81270236315b0ec7d946037b800a064fe58bb914c069d1dede14c54e84b316853b328dd764791914bdddd02465a8d1b8ba2c24f8de433ebab4b5dfb69db04e2009e62e65e155b1cb19dabc3bacc05aa753539f1cd9e7b1bac4"
         #exit()
 
@@ -97,7 +100,7 @@ oauth_token = authorization token
     thefiles =[]
 
     #we create a transfer_api_client
-    transfer_api_client= api_client.TransferAPIClient('cadeddu', goauth=oauth_token)
+    transfer_api_client= api_client.TransferAPIClient(username, goauth=oauth_token)
 
     try:
         while True:
@@ -105,7 +108,7 @@ oauth_token = authorization token
 
             if thefiles:
                 #print ("im pushing " + str(thefiles))
-                process(addremotes(thefiles,remote_path),transfer_api_client)
+                process(addremotes(thefiles,remote_path),transfer_api_client,local_endpoint,remote_endpoint)
                 thefiles=[]
             else:
                 print "tick"
