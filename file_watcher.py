@@ -1,11 +1,9 @@
 #!/usr/bin/env python
 __author__ = 'deddu'
 
-import time, datetime
+import time
 from watchdog.observers import Observer
 from watchdog.events import PatternMatchingEventHandler
-
-
 
 class GlobusFileWatcherHandler(PatternMatchingEventHandler):
     def on_any_event(self, event):
@@ -24,38 +22,37 @@ def process(files,trans_api, ep1="ep1",ep2="ep2"):
       '''
       process the different files for the different events they registered.
       '''
-      from api_interface import transfer,delete,move
+      from api_interface import transfer,delete#,move
       # define few filter predicates
       def modified_or_created(x):
           return x.get('type') in ["modified","created"]
       def deleted(x):
           return x.get('type')=="deleted"
-      def moved(x):
-          return x.get('type')=="moved"
-
+      #def moved(x):
+      #    return x.get('type')=="moved"
+      #TODO: few possible improvements are dir creation, etc.
       totransfer = filter(modified_or_created, thefiles)
       todel = filter(deleted,thefiles)
-      tomove = filter(moved,thefiles)
-      print "sending"
+      #tomove = filter(moved,thefiles)
       if totransfer:
         _,_,data = trans_api.submission_id()
         subid = data['value']
         task=transfer([x['src_path'] for x in totransfer],[x['remote_path'] for x in totransfer],ep1,ep2, subid)
-        print "READY TO SUBMIT TASK: -----------\n",task.as_json()
+        #print "READY TO SUBMIT TASK: -----------\n",task.as_json()
         code,reason,data=transfer_api_client.transfer(task)
         print "code:\t{0}\nreason:\t{1}\ndata:\t{2}".format(code,reason,data)
       if todel:
         _,_,data = trans_api.submission_id()
         subid = data['value']
         task=delete([x['src_path'] for x in todel],ep1,ep2,subid)
-        code,reason,data=transfer_api_client.transfer(task)
+        code,reason,data=transfer_api_client.delete(task)
         print "code:\t{0}\nreason:\t{1}\ndata:\t{2}".format(code,reason,data)
-      if tomove:
-        _,_,data = trans_api.submission_id()
-        subid = data['value']
-        task=move([x['src_path'] for x in totransfer],[x['remote_path'] for x in totransfer],ep1,ep2,subid)
-        code,reason,data=transfer_api_client.transfer(task)
-        print "code:\t{0}\nreason:\t{1}\ndata:\t{2}".format(code,reason,data)
+      #if tomove:
+      #  _,_,data = trans_api.submission_id()
+      #  subid = data['value']
+      #  task=move([x['src_path'] for x in totransfer],[x['remote_path'] for x in totransfer],ep1,ep2,subid)
+      #  code,reason,data=transfer_api_client.transfer(task)
+      #  print "code:\t{0}\nreason:\t{1}\ndata:\t{2}".format(code,reason,data)
 
 if __name__ == "__main__":
     import sys
@@ -115,8 +112,6 @@ oauth_token = authorization token
                 except api_client.APIError as e:
                     print "Error: %s" % e.message
                 thefiles=[]
-            else:
-                print "tick"
 
     except KeyboardInterrupt:
         observer.stop()
