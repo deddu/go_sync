@@ -18,7 +18,11 @@ go_sync requires the following packages to be installed
 sudo apt-get update
 sudo apt-get install git python-pip python-virtualenv fontforge python-dev tk tcllib
 
-git clone 
+git clone https://github.com/deddu/go_sync.git
+cd go_sync
+virtualenv .
+. bin/activate
+pip install -r requirements.txt
 ```
 
 

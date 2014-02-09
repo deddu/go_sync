@@ -79,6 +79,7 @@ remote_endpoint= name of the remote endpoint
 remote_path = path on the remote machine
 oauth_token = authorization token
      """
+        exit(1)
 
     #FIXME: if there's time read from a .gitignore like file the stuff to exclude from the syncing.
     event_handler = GlobusFileWatcherHandler()#(ignore_patterns = ['.*', '*.pyc'], ignore_directories=['.git','.idea'])
@@ -98,7 +99,7 @@ oauth_token = authorization token
 
     try:
         while True:
-            time.sleep(10) #FIXME:5 minutes
+            time.sleep(5*60) #every 5 minutes
             if thefiles:
                 try:
                     process(addremotes(thefiles,remote_path),transfer_api_client,local_endpoint,remote_endpoint)
