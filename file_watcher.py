@@ -66,7 +66,7 @@ if __name__ == "__main__":
         remote_path = sys.argv[5]
         oauth_token = sys.argv[6]
     except Exception as e:
-        print e.message, """
+        print sys.argv, e.message, """
 go_sync
 observe for changes in the current folder (recursively) and updates the remote accordingly.
 usage:
@@ -79,16 +79,9 @@ remote_endpoint= name of the remote endpoint
 remote_path = path on the remote machine
 oauth_token = authorization token
      """
-        username = "cadeddu"
-        local_endpoint = "cadeddu#bigmac"
-        local_path = "tmp"
-        remote_endpoint= "cadeddu#ec2-54-80-0-6"
-        remote_path = "/home/cadeddu/globus/tmp2"
-        oauth_token = "un=cadeddu|tokenid=486d4340-90d3-11e3-8ab8-1231391ccf32|expiry=1423408287|client_id=cadeddu|token_type=Bearer|SigningSubject=https://nexus.api.globusonline.org/goauth/keys/491c851c-90d3-11e3-8ab8-1231391ccf32|sig=2246530f0d6c47e85a0e6dcf5413f8c84671a62896d18510ecbea648a5fccddc643c17c35da81a81270236315b0ec7d946037b800a064fe58bb914c069d1dede14c54e84b316853b328dd764791914bdddd02465a8d1b8ba2c24f8de433ebab4b5dfb69db04e2009e62e65e155b1cb19dabc3bacc05aa753539f1cd9e7b1bac4"
-        #exit()
 
     #FIXME: if there's time read from a .gitignore like file the stuff to exclude from the syncing.
-    event_handler = GlobusFileWatcherHandler(ignore_patterns = ['.*', '*.pyc'], ignore_directories=['.git','.idea'])
+    event_handler = GlobusFileWatcherHandler()#(ignore_patterns = ['.*', '*.pyc'], ignore_directories=['.git','.idea'])
     observer = Observer()
     observer.schedule(event_handler, path=local_path, recursive=True)
     observer.start()
