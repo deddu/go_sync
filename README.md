@@ -11,6 +11,18 @@ keep a remote folder synchronized with the desired local folder using globus.api
 - remote_path = path on the remote machine
 - oauth_token = authorization token        
 
+##Installation:
+go_sync requires the following packages to be installed
+
+```
+sudo apt-get update
+sudo apt-get install git python-pip python-virtualenv fontforge python-dev tk tcllib
+
+git clone 
+```
+
+
+
 ##ToDo:
 
 - add "moving" logic . the lines are commented out due to the requests going out of sync. which means that the move fails. requires 1-2h of work
