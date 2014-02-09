@@ -1,0 +1,3 @@
+#/usr/bin/bash
+. ./bin/activate
+/usr/bin/env python file_watcher.py $@
